@@ -1,0 +1,105 @@
+import java.util.Scanner;
+
+class Account {
+    protected String customerName;
+    protected int accountNo;
+    protected String type;
+    protected double balance;
+
+    public Account(String customerName, int accountNo, String type, double initialBalance) {
+        this.customerName = customerName;
+        this.accountNo = accountNo;
+        this.type = type;
+        this.balance = initialBalance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposit successful. New balance: " + balance);
+        } else {
+            System.out.println("Invalid deposit amount.");
+        }
+    }
+
+    public void displayBalance() {
+        System.out.println("Account No: " + accountNo);
+        System.out.println("Customer Name: " + customerName);
+        System.out.println("Account Type: " + type);
+        System.out.println("Balance: " + balance);
+    }
+
+    public void withdraw(double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrawal successful.");
+        } else {
+            System.out.println("Insufficient balance.");
+        }
+    }
+}
+
+class SavAcct extends Account {
+
+    public SavAcct(String name, int accNo, double initialBalance) {
+        super(name, accNo, "Savings", initialBalance);
+    }
+
+    public void computeInterest(double rate) {
+        double interest = balance * rate / 100;
+        balance += interest;
+        System.out.println("Interest added: " + interest);
+    }
+}
+class CurAcct extends Account {
+    private static final double MIN_BALANCE = 1000;
+    private static final double SERVICE_CHARGE = 50;
+
+    public CurAcct(String name, int accNo, double initialBalance) {
+        super(name, accNo, "Current", initialBalance);
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        super.withdraw(amount);
+        if (balance < MIN_BALANCE) {
+            balance -= SERVICE_CHARGE;
+            System.out.println("Minimum balance not maintained.");
+            System.out.println("Service charge imposed: " + SERVICE_CHARGE);
+        }
+    }
+}
+
+public class Bank {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter customer name:");
+        String name = sc.nextLine();
+
+        System.out.println("Enter account number:");
+        int accNo = sc.nextInt();
+
+        System.out.println("Enter initial balance:");
+        double balance = sc.nextDouble();
+
+        SavAcct sav = new SavAcct(name, accNo, balance);
+
+        System.out.println("\nSavings Account Operations:");
+        sav.displayBalance();
+        sav.deposit(2000);
+        sav.computeInterest(5);
+        sav.withdraw(1000);
+        sav.displayBalance();
+
+        CurAcct cur = new CurAcct(name, accNo + 1, balance);
+
+        System.out.println("\nCurrent Account Operations:");
+        cur.displayBalance();
+        cur.deposit(3000);
+        cur.withdraw(3500);
+        cur.displayBalance();
+
+        sc.close();
+    }
+}
